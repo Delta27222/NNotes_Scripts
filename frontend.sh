@@ -2,7 +2,7 @@
 
 # Paso 5: Iterar sobre los contenedores del front para ejecutar las siguientes tareas
 for i in $(seq 1 3); do
-    echo "==================== Contenedor $i =========="
+    echo "==================== Contenedor frontend-$i =========="
     echo "========== Instalar Node.js y Git ..."
 
     # Actualizar los paquetes existentes dentro del contenedor
