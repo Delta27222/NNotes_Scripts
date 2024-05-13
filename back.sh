@@ -36,35 +36,35 @@ do
 
   # Clonar el repositorio de GitHub dentro del contenedor
   echo "========== Clonando el repositorio de GitHub ..."
-  lxc exec container_name -- git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/NNotes-RestAPI
+  lxc exec $container_name -- git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/NNotes-RestAPI
 
   # Agregar instrucciones adicionales
   echo "========== Creando directorio y descargando script ..."
-  lxc exec container_name -- bash -c 'mkdir -p /opt/scripts && cd /opt/scripts && sudo curl -LJO https://raw.githubusercontent.com/italovisconti/NNotes-RestAPI/main/src/scripts/script.sh && sudo chmod +x /opt/scripts/script.sh'
+  lxc exec $container_name -- bash -c 'mkdir -p /opt/scripts && cd /opt/scripts && sudo curl -LJO https://raw.githubusercontent.com/italovisconti/NNotes-RestAPI/main/src/scripts/script.sh && sudo chmod +x /opt/scripts/script.sh'
 
   # Entramos al lugar donde se encuentran los servicios
   echo "========== Accediendo al directorio de servicios ..."
-  lxc exec container_name -- bash -c 'cd /lib/systemd/system/'
+  lxc exec $container_name -- bash -c 'cd /lib/systemd/system/'
 
   # Descargamos el archivo del servicio que queremos
   echo "========== Descargando archivo de servicio ..."
-  lxc exec container_name -- bash -c 'sudo curl -LJO https://github.com/italovisconti/NNotes-RestAPI/raw/main/src/services/back-'"${i}"'.service'
+  lxc exec $container_name -- bash -c 'sudo curl -LJO https://github.com/italovisconti/NNotes-RestAPI/raw/main/src/services/back-'"${i}"'.service'
 
   # Movemos el archivo a la carpeta que queremos
   echo "========== Movemos el archivo del servicio a /lib/systemd/system/..."
-  lxc exec container_name -- mv /root/back-"${i}".service /lib/systemd/system/
+  lxc exec $container_name -- mv /root/back-"${i}".service /lib/systemd/system/
 
   # Corremos el servicio
   echo "========== Iniciando el servicio ..."
-  lxc exec container_name -- bash -c "sudo systemctl start back-'"${i}"'"
+  lxc exec $container_name -- bash -c "sudo systemctl start back-'"${i}"'"
 
   # Activamos el enable del servicio
   echo "========== Habilitando el inicio autom\u00e1tico del servicio ..."
-  lxc exec container_name -- bash -c "sudo systemctl enable back-'"${i}"'"
+  lxc exec $container_name -- bash -c "sudo systemctl enable back-'"${i}"'"
 
   # Recargamos la configuraci\u00f3n de systemd
   echo "========== Recargando configuraci\u00f3n de systemd ..."
-  lxc exec container_name -- bash -c 'sudo systemctl daemon-reload'
+  lxc exec $container_name -- bash -c 'sudo systemctl daemon-reload'
 
   # Agregamos la configuraci\u00f3n para el puerto din\u00e1mico    (CREO QUE ESTO NO ES NECESARIO)
   # echo "========== Agregando configuraci\u00f3n para puerto $((3000)) ..."
