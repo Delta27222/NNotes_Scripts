@@ -5,7 +5,7 @@ runcmd:
 - 'echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list'
 - 'apt-get update'
 - 'apt-get install -y mongodb-org'
-- echo 'siguiendo haciendo eso' > /var/log/iniiit.log
+- echo 'siguiendo haciendo eso' >> /var/log/iniiit.log
 #- ip_n=$(hostname -I | awk '{print $1}')
 #- /bin/bash -c 'ip_n=$(hostname -I | awk '\''{print $1}'\'') && echo $ip_n'
 - 'mkdir -p /mongos/db'

@@ -1,0 +1,5 @@
+#cloud-config
+runcmd:
+- apt update
+- apt install nginx -y
+- cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf__bak
