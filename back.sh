@@ -31,30 +31,42 @@ do
   container_name="${back_base_name}${i}"
   sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat back.yaml)"
 
-  # podemos buscar las ip de las bases de datos podemos usar lxc list, o creamos un txt en el sh de mongo, y accedemos a ese txt
-  # Pero aprovechamos el dns de los contenedores, y en vez de usar las ip, usaremos los nombres.lxd de los contenedores
+  # debemos buscar las ip de las bases de datos podemos usar lxc list, o creamos un txt en el sh de mongo, y accedemos a ese txt
+  # Pero aprovechamos el dns de los contenedores
 
-  #echo "corriendo express app en ${container_name}"
-  sudo lxc exec "$container_name" -- bash -c "cd /root/myapp && echo PORT=3000 > .env && echo DB_URI=$mongo_uri >> .env " #&& nohup npx ts-node src/app.ts &"
+  # Clonar el repositorio de GitHub dentro del contenedor
+  echo "========== Clonando el repositorio de GitHub ..."
+  lxc exec front-$i -- git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/NNotes-RestAPI
 
+  # Agregar instrucciones adicionales
+  echo "========== Creando directorio y descargando script ..."
+  lxc exec front-$i -- bash -c 'mkdir -p /opt/scripts && cd /opt/scripts && sudo curl -LJO https://raw.githubusercontent.com/italovisconti/NNotes-RestAPI/main/src/scripts/script.sh && sudo chmod +x /opt/scripts/script.sh'
 
-#podemos daemonizar la corrida del back creando un nuevo servicio
-#[Unit]
-#Description=My App
+  # Entramos al lugar donde se encuentran los servicios
+  echo "========== Accediendo al directorio de servicios ..."
+  lxc exec container_name -- bash -c 'cd /lib/systemd/system/'
 
-#[Service]
-#ExecStart= algo con npx 
-#ExecStart=/usr/local/bin/npm run dev
-#Restart=always
-#User=nobody
-#Environment=PATH=/usr/bin:/usr/local/bin
-#Environment=NODE_ENV=production
-#WorkingDirectory=/path/to/your/app
+  # Descargamos el archivo del servicio que queremos
+  echo "========== Descargando archivo de servicio ..."
+  lxc exec container_name -- bash -c 'sudo curl -LJO https://github.com/italovisconti/NNotes-RestAPI/raw/main/src/services/back-'"${i}"'.service'
 
-#[Install]
-#WantedBy=multi-user.target
+  # Movemos el archivo a la carpeta que queremos
+  echo "========== Movemos el archivo del servicio a /lib/systemd/system/..."
+  lxc exec container_name -- mv /root/back-"${i}".service /lib/systemd/system/
 
+  # Corremos el servicio
+  echo "========== Iniciando el servicio ..."
+  lxc exec container_name -- bash -c "sudo systemctl start back-'"${i}"'"
 
-#sudo systemctl daemon-reload
-#sudo systemctl start my-app
+  # Activamos el enable del servicio
+  echo "========== Habilitando el inicio autom\u00e1tico del servicio ..."
+  lxc exec container_name -- bash -c "sudo systemctl enable back-'"${i}"'"
+
+  # Recargamos la configuraci\u00f3n de systemd
+  echo "========== Recargando configuraci\u00f3n de systemd ..."
+  lxc exec container_name -- bash -c 'sudo systemctl daemon-reload'
+
+  # Agregamos la configuraci\u00f3n para el puerto din\u00e1mico    (CREO QUE ESTO NO ES NECESARIO)
+  # echo "========== Agregando configuraci\u00f3n para puerto $((3000)) ..."
+  # lxc config device add container_name puerto$((3000)) proxy listen=tcp:0.0.0.0:$((3000)) connect=tcp:127.0.0.1:$((3000))
 done
