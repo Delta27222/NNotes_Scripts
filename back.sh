@@ -32,9 +32,13 @@ do
   sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat back.yaml)"
 
   # debemos buscar las ip de las bases de datos podemos usar lxc list, o creamos un txt en el sh de mongo, y accedemos a ese txt
-  # tambien podemos aprovechar el dns de los contenedores
-  echo "corriendo express app en ${container_name}"
-  sudo lxc exec "$container_name" -- bash -c "cd /root/myapp && echo PORT=3000 > .env && echo DB_URI=$mongo_uri >> .env && nohup npx ts-node src/app.ts &"
+  # Pero aprovechamos el dns de los contenedores
+
+  #no funciona nohup con node
+  #echo "corriendo express app en ${container_name}"
+  #sudo lxc exec "$container_name" -- bash -c "cd /root/myapp && echo PORT=3000 > .env && echo DB_URI=$mongo_uri >> .env && nohup npx ts-node src/app.ts &"
+
+
 #podemos daemonizar la corrida del back creando un nuevo servicio
 #[Unit]
 #Description=My App
