@@ -36,11 +36,11 @@ do
 
   # Clonar el repositorio de GitHub dentro del contenedor
   echo "========== Clonando el repositorio de GitHub ..."
-  lxc exec front-$i -- git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/NNotes-RestAPI
+  lxc exec container_name -- git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/NNotes-RestAPI
 
   # Agregar instrucciones adicionales
   echo "========== Creando directorio y descargando script ..."
-  lxc exec front-$i -- bash -c 'mkdir -p /opt/scripts && cd /opt/scripts && sudo curl -LJO https://raw.githubusercontent.com/italovisconti/NNotes-RestAPI/main/src/scripts/script.sh && sudo chmod +x /opt/scripts/script.sh'
+  lxc exec container_name -- bash -c 'mkdir -p /opt/scripts && cd /opt/scripts && sudo curl -LJO https://raw.githubusercontent.com/italovisconti/NNotes-RestAPI/main/src/scripts/script.sh && sudo chmod +x /opt/scripts/script.sh'
 
   # Entramos al lugar donde se encuentran los servicios
   echo "========== Accediendo al directorio de servicios ..."
