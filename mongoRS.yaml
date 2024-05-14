@@ -1,4 +1,5 @@
 #cloud-config
+
 runcmd:
 - echo 'haciendo eso' > /var/log/iniiit.log
 - 'curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor'
@@ -10,6 +11,5 @@ runcmd:
 #- /bin/bash -c 'ip_n=$(hostname -I | awk '\''{print $1}'\'') && echo $ip_n'
 - 'mkdir -p /mongos/db'
 # podria usar /bin/bash -c <comando>
-#- nohup mongod --port 2888 --dbpath /mongos/db --replSet uniRS --bind_ip 127.0.0.1,$ip_n &
 - nohup mongod --port 2888 --dbpath /mongos/db --replSet uniRS --bind_ip 127.0.0.1,$(hostname -I | awk '{print $1}') &
 - echo 'mongo corriendo' | tee -a /var/log/iniiit.log

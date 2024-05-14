@@ -1,5 +1,8 @@
 #!/bin/bash
 
+front_base_name="front-"
+back_base_name="backc"
+
 # Paso 1: Desinstalar el paquete LXD
 echo "Paso 1: Desinstalando el paquete LXD..."
 sudo snap remove lxd
@@ -18,7 +21,7 @@ echo "Contenedor inicializado con \u00e9xito."
 # Paso 4: Crear y lanzar tres contenedores basados en la imagen ubuntu:jammy FRONT
 echo "Paso 4: Creando y lanzando tres contenedores basados en la imagen ubuntu:jammy para el front..."
 for i in $(seq 1 3); do
-    lxc launch ubuntu:jammy front-${i}
+    lxc launch ubuntu:jammy ${front_base_name}${i}
 done
 echo "Tres contenedores de front han sido creados y lanzados."
 

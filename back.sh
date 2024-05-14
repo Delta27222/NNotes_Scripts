@@ -29,44 +29,44 @@ echo "mongo URI: ${mongo_uri}"
 for i in $(seq 1 3)
 do
   container_name="${back_base_name}${i}"
+  # el cloud-config es mas lento
   sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat back.yaml)"
+done
 
-  # debemos buscar las ip de las bases de datos podemos usar lxc list, o creamos un txt en el sh de mongo, y accedemos a ese txt
-  # Pero aprovechamos el dns de los contenedores
+  # lxc exec "$container_name" -- sh -c 'cloud-init status --wait'
 
-  # Clonar el repositorio de GitHub dentro del contenedor
-  echo "========== Clonando el repositorio de GitHub ..."
-  lxc exec $container_name -- git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/NNotes-RestAPI
+  # hacemos dos for, para que primero se creen todos los contenedores, y despues se verifique que ya estan listos (asi el cloud initi se ejucuta concurrentemente)
+for i in $(seq 1 3)
+do
+  container_name="${back_base_name}${i}"
+  while [ "$(sudo lxc exec "$container_name" -- sh -c 'cloud-init status | grep -oP "status: \K.*"')" != "done" ]
+  do
+    echo "Esperando por cloud-init..."
+    sleep 6
+  done
 
-  # Agregar instrucciones adicionales
-  echo "========== Creando directorio y descargando script ..."
-  lxc exec $container_name -- bash -c 'mkdir -p /opt/scripts && cd /opt/scripts && sudo curl -LJO https://raw.githubusercontent.com/italovisconti/NNotes-RestAPI/main/src/scripts/script.sh && sudo chmod +x /opt/scripts/script.sh'
+  sudo lxc exec "$container_name" -- bash -c "cd /opt/app/myapp && echo PORT=3000 > .env && echo DB_URI=$mongo_uri >> .env "
 
-  # Entramos al lugar donde se encuentran los servicios
-  echo "========== Accediendo al directorio de servicios ..."
-  lxc exec $container_name -- bash -c 'cd /lib/systemd/system/'
+  echo "creando servicio para correr backend en $container_name..."
+  # Create the systemd service file
+  sudo lxc exec "$container_name" -- bash -c "echo '[Unit]
+Description=My Express TS Backend
+After=network.target
 
-  # Descargamos el archivo del servicio que queremos
-  echo "========== Descargando archivo de servicio ..."
-  lxc exec $container_name -- bash -c 'sudo curl -LJO https://github.com/italovisconti/NNotes-RestAPI/raw/main/src/services/back-'"${i}"'.service'
+[Service]
+ExecStart=/usr/bin/npm run dev
+WorkingDirectory=/opt/app/myapp
+User=nobody
+Group=nogroup
+Restart=always
 
-  # Movemos el archivo a la carpeta que queremos
-  echo "========== Movemos el archivo del servicio a /lib/systemd/system/..."
-  lxc exec $container_name -- mv /root/back-"${i}".service /lib/systemd/system/
+[Install]
+WantedBy=multi-user.target' > /etc/systemd/system/myapp.service"
 
-  # Corremos el servicio
-  echo "========== Iniciando el servicio ..."
-  lxc exec $container_name -- bash -c "sudo systemctl start back-'"${i}"'"
+  sudo lxc exec "$container_name" -- bash -c "systemctl enable myapp && systemctl start myapp"
 
-  # Activamos el enable del servicio
-  echo "========== Habilitando el inicio autom\u00e1tico del servicio ..."
-  lxc exec $container_name -- bash -c "sudo systemctl enable back-'"${i}"'"
+  echo "backend $container_name listo!"
 
-  # Recargamos la configuraci\u00f3n de systemd
-  echo "========== Recargando configuraci\u00f3n de systemd ..."
-  lxc exec $container_name -- bash -c 'sudo systemctl daemon-reload'
-
-  # Agregamos la configuraci\u00f3n para el puerto din\u00e1mico    (CREO QUE ESTO NO ES NECESARIO)
   # echo "========== Agregando configuraci\u00f3n para puerto $((3000)) ..."
   # lxc config device add container_name puerto$((3000)) proxy listen=tcp:0.0.0.0:$((3000)) connect=tcp:127.0.0.1:$((3000))
 done

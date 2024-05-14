@@ -1,15 +1,12 @@
 #cloud-config
-
 packages:
 - git
 
 runcmd:
 - echo 'iniciando back' > /var/log/back.log
-  #- 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash'
-  #- 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && nvm install 22'
-  #- 'nvm install 22'
-- sudo snap install node --classic
-- git clone https://github.com/italovisconti/NNotes-RestAPI.git root/myapp
-- cd /root/myapp && npm install
+# - sudo snap install node --classic
+- 'curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash'
+- 'apt-get install nodejs -y'
+- git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/myapp
+- cd /opt/app/myapp && npm install
 - echo 'node y repositorio listo' > /var/log/back.log
-#ahora, debemos agregar las variables de entorno, que son: el puerto (3000) y el uri hacia la base de datos que tuvimos que haber creado justo antes de esto

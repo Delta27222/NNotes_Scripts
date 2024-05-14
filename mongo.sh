@@ -26,7 +26,7 @@ for i in $(seq 1 3)
 do
   container_name="${base_name}${i}"
   #echo "Launching c: $container_name"
-  sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat mongoRS.yaml)"
+  sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat ./mongoRS.yaml)"
 done
 
 #obtenemos todas las ip de los contendores creados
@@ -55,7 +55,6 @@ do
   fi
 done
 
-#tengo que retornar las ip de los contenedores listos
 echo "mongo done!"
 
 #hay que armar un json y es problematico, es mejor iniciar el rs y agregar 1 a 1
