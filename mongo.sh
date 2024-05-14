@@ -1,6 +1,6 @@
 #!/bin/sh
 
-base_name="dbc"
+# mongo_base_name="dbc"
 
 # <comando> > /dev/null 2>&1 sirve para que el stderr y stdout se vayan a /dev/null y no se muestra nada en consola
 
@@ -22,11 +22,11 @@ get_container_ip() {
 
 echo "running mongo.sh"
 
-for i in $(seq 1 3)
-do
-  container_name="${base_name}${i}"
-  sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat ./mongoRS.yaml)"
-done
+# for i in $(seq 1 3)
+# do
+#   container_name="${mongo_base_name}${i}"
+#   sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat ./mongoRS.yaml)"
+# done
 
 # NOTA: La bd no corre como un servicio, pero deberia cambiarse a servicio.
 
@@ -34,8 +34,8 @@ done
 #y hacemos rs.initiate() junto a rs.add()
 for i in $(seq 1 3)
 do
-  primary_name="${base_name}1"
-  container_name="${base_name}${i}"
+  primary_name="${mongo_base_name}1"
+  container_name="${mongo_base_name}${i}"
   container_ip=$(get_container_ip "$container_name")
 
   echo "checking mongo in $container_name - $container_ip"

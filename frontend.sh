@@ -25,6 +25,10 @@ for i in $(seq 1 3); do
     echo "========== Clonando el repositorio de GitHub ..."
     lxc exec front-$i -- git clone https://github.com/italovisconti/NNotes.git /opt/app/NNotes
 
+    # Agregar ip del back LB al archivo de configuracion
+    echo "========== Agregando ip del back LB al archivo de configuraci\u00f3n ..."
+    lxc exec front-$i -- bash -c 'cd /opt/app/NNotes && echo "NEXT_PUBLIC_BASE_URL=http://$(lxc list | grep '"${back_lb_base_name}"' | awk "{print \$6}")" > .env'
+
     # Agregar instrucciones adicionales
     echo "========== Creando directorio y descargando script ..."
     lxc exec front-$i -- bash -c 'mkdir -p /opt/scripts && cd /opt/scripts && sudo curl -LJO https://raw.githubusercontent.com/italovisconti/NNotes/main/src/scripts/script.sh && sudo chmod +x /opt/scripts/script.sh'

@@ -9,4 +9,4 @@ runcmd:
 - 'apt-get install nodejs -y'
 - git clone https://github.com/italovisconti/NNotes-RestAPI.git /opt/app/myapp
 - cd /opt/app/myapp && npm install
-- echo 'node y repositorio listo' > /var/log/back.log
+- echo 'node y repositorio listo' >> /var/log/back.log
