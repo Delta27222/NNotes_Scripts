@@ -3,6 +3,8 @@
 front_base_name="front-"
 back_base_name="backc"
 
+sudo chmod +x ./mongo.sh ./frontend.sh ./back.sh ./loadbalancerFront.sh ./loadbalancerBack.sh
+
 # Paso 1: Desinstalar el paquete LXD
 echo "Paso 1: Desinstalando el paquete LXD..."
 sudo snap remove lxd

@@ -25,9 +25,10 @@ echo "running mongo.sh"
 for i in $(seq 1 3)
 do
   container_name="${base_name}${i}"
-  #echo "Launching c: $container_name"
   sudo lxc launch ubuntu:jammy "$container_name" --config cloud-init.user-data="$(cat ./mongoRS.yaml)"
 done
+
+# NOTA: La bd no corre como un servicio, pero deberia cambiarse a servicio.
 
 #obtenemos todas las ip de los contendores creados
 #y hacemos rs.initiate() junto a rs.add()
@@ -56,7 +57,3 @@ do
 done
 
 echo "mongo done!"
-
-#hay que armar un json y es problematico, es mejor iniciar el rs y agregar 1 a 1
-#sudo lxc exec "${base_name}1" -- mongosh --port 2888 --eval 'rs.initiate({_id: "uniRS", members: [{ _id: 0, host: "${container_ip}:2888" }, { _id: 1, host: "${container_ip}:2888"}]})'
-
