@@ -16,7 +16,7 @@
 1. Clona este repositorio
 ```shell
 git clone https://github.com/Delta27222/NNotes_Scripts.git && cd NNotes_Scripts
-```![Uploading logoNNotes.svg…]()
+```
 
 
 2. Cambia los permisos de ejecucion de install.sh
