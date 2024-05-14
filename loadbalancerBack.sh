@@ -29,7 +29,7 @@ EOF
 # Iteramos por los backend para agregarlos en el pool
 for i in $(seq 1 3) 
 do
-  echo "server $back_base_name$i.lxd:3000;" >> "$nginx_conf"
+  echo "server $back_base_name$i.lxd:3000 max_fails=3 fail_timeout=30s;" >> "$nginx_conf"
 done
 echo "}" >> "$nginx_conf"
 cat << EOF >> "$nginx_conf"
