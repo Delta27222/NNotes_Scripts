@@ -27,7 +27,8 @@ for i in $(seq 1 3); do
 
     # Agregar ip del back LB al archivo de configuracion
     echo "========== Agregando ip del back LB al archivo de configuraci\u00f3n ..."
-    lxc exec front-$i -- bash -c 'cd /opt/app/NNotes && echo "NEXT_PUBLIC_BASE_URL=http://$(lxc list | grep '"${back_lb_base_name}"' | awk "{print \$6}")" > .env'
+    lb_ip=$(lxc list | grep "${back_lb_base_name}" | awk '{print $6}')
+    lxc exec front-$i -- bash -c 'cd /opt/app/NNotes && echo "NEXT_PUBLIC_BASE_URL=http://'"${lb_ip}"'" > .env'
 
     # Agregar instrucciones adicionales
     echo "========== Creando directorio y descargando script ..."
